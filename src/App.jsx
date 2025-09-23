@@ -10,6 +10,8 @@ import InsAddCourse from './pages/instructor/InsAddCourse';
 import InsAddCourseContent from './pages/instructor/InsAddCourseContent';
 import StudentCourseContent from './pages/student/StudentCourseContent';
 
+// Base URL for API calls
+export const BASE_URL = 'http://localhost:9090/pringapp1';  // <- added
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -31,10 +33,7 @@ function App() {
                     element={<Login setIsAuthenticated={setIsAuthenticated} />} 
                 />
                 <Route path="/course-content-view" element={<StudentCourseContent />} />
-                <Route 
-                    path="/forgot-password" 
-                    element={<ForgotPassword />} 
-                />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 {/* Protected Routes */}
                 <Route 
