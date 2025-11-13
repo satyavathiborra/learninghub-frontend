@@ -16,7 +16,7 @@ const AddCourseContent = () => {
     const newContent = {
       courseId: courseId,
       module: module,
-      content: content,
+      description: content,
       link: link, // Adding the link field
     };
 

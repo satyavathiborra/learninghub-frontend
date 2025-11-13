@@ -31,7 +31,7 @@ const AddCourse = () => {
     try {
       const payload = {
         username,
-        coursed: courseId,
+        courseId: courseId,
         title,
         description,
         time: parseInt(time),

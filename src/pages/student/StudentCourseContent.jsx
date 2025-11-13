@@ -5,50 +5,40 @@ const StudentCourseContent = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const courseId = queryParams.get('courseId');
-  let username = queryParams.get('username');
-
+  const [username, setUsername] = useState(queryParams.get('username') || '');
   const [contents, setContents] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
-
     if (!username) {
       const storedUser = JSON.parse(localStorage.getItem('user'));
-      if (storedUser && storedUser.username) {
-        username = storedUser.username;
-      } else {
-        setError('Username is missing. Please log in.');
-        return;
-      }
+      if (storedUser && storedUser.username) setUsername(storedUser.username);
+      else setError('Username missing. Please log in.');
     }
+  }, [username]);
 
-    const fetchCourseContent = async () => {
+  useEffect(() => {
+    if (!username || !courseId) return;
+    const fetchContent = async () => {
       try {
-        if (!courseId) {
-          throw new Error('Course ID is missing.');
-        }
-
-        const response = await fetch(`http://localhost:8083/student-course-content?username=${username}&courseId=${courseId}`);
-        if (!response.ok) throw new Error('Failed to fetch content');
-        const data = await response.json();
-        setContents(data);
-        setError('');
+        const res = await fetch(`http://localhost:8083/student-course-content?username=${username}&courseId=${courseId}`);
+        if (!res.ok) throw new Error('Failed to fetch content');
+        const data = await res.json();
+        if (!data || data.length === 0) setError('No content found.');
+        else { setContents(data); setError(''); }
       } catch (err) {
         setError(err.message);
-        setContents([]);
       }
     };
-
-    fetchCourseContent();
-  }, [courseId, username]);
+    fetchContent();
+  }, [username, courseId]);
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+    <div>
       <h2>Course Content for {courseId || 'Unknown Course'}</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {contents.length > 0 ? (
-        <table border="1" cellPadding="10" style={{ marginTop: '20px', borderCollapse: 'collapse' }}>
+      {contents.length > 0 && (
+        <table border="1" cellPadding="10">
           <thead>
             <tr>
               <th>ID</th>
@@ -70,8 +60,6 @@ const StudentCourseContent = () => {
             ))}
           </tbody>
         </table>
-      ) : (
-        !error && <p>No content found.</p>
       )}
     </div>
   );
